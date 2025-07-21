@@ -106,13 +106,13 @@
   </div>
 
   <script>
-    // Client-side validation to prevent submission with empty fields
+    
     document.getElementById('loginForm').addEventListener('submit', function (e) {
       const email = document.getElementById('email');
       const password = document.getElementById('password');
       let valid = true;
 
-      // Clear previous error messages
+      
       email.classList.remove('is-invalid');
       password.classList.remove('is-invalid');
 

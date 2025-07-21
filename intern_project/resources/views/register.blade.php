@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        // Instant validation
+        
         const form = document.getElementById('registerForm');
         form.addEventListener('submit', function (e) {
             const password = document.getElementById('password').value;

@@ -42,12 +42,10 @@
         <nav id="sidebar" class="d-flex flex-column p-3">
             <h4 class="mb-4">Cancer Institute</h4>
             <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item sidebar-link active" data-section="administrator">
-                <a href="admin.login">Administrator</a>
+                <li class="nav-item sidebar-link active" data-section="access-section">
+                    <a href="access">ACCESS PAGE FOR STAKER HOLDERS</a>
                 </li>
-                <li class="nav-item sidebar-link" data-section="doctor">Doctor</li>
-                <li class="nav-item sidebar-link" data-section="patient">Patient</li>
-                <li class="nav-item sidebar-link" data-section="pharmacy">Pharmacy</li>
+                
             </ul>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -58,18 +56,20 @@
         
     </div>
 
+    @yield('content')
+
     <script>
         document.querySelectorAll('.sidebar-link').forEach(link => {
             link.addEventListener('click', () => {
-                // Remove active class from all links
+               
                 document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-                // Hide all dashboard sections
+                
                 document.querySelectorAll('.dashboard-section').forEach(sec => sec.classList.remove('active'));
 
-                // Add active class to clicked link
+                
                 link.classList.add('active');
 
-                // Show corresponding section
+                
                 const sectionId = link.getAttribute('data-section');
                 document.getElementById(sectionId).classList.add('active');
             });
