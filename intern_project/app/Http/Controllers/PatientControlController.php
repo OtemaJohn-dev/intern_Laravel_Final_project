@@ -10,22 +10,13 @@ use App\Models\Feedback;
 
 class PatientControlController extends Controller
 {
-    /**
-     * Display the Patient Control Page with prescriptions.
-     */
     public function displayindex()
     {
         $user = Auth::user();
-
-        // Fetch prescriptions by patient name
         $prescriptions = Prescription::where('pat_name', $user->name)->get();
 
         return view('patControlPage', compact('prescriptions'));
     }
-
-    /**
-     * Handle appointment request submission.
-     */
     public function requestAppointment(Request $request)
     {
         if (!Auth::check()) {
@@ -46,10 +37,6 @@ class PatientControlController extends Controller
 
         return redirect()->back()->with('success', 'Appointment requested successfully!');
     }
-
-    /**
-     * Handle patient feedback submission.
-     */
     public function sendFeedback(Request $request)
     {
         if (!Auth::check()) {

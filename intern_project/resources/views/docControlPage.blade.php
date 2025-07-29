@@ -105,7 +105,6 @@
         <p class="error">{{ session('error') }}</p>
     @endif
 
-    {{-- Manage Patients --}}
     <h2>Manage Patients</h2>
     <form action="{{ route('doctor.patient.store') }}" method="POST">
         @csrf
@@ -155,7 +154,6 @@
         </tbody>
     </table>
 
-    {{-- Available Drugs --}}
     <h2>Available Drugs</h2>
     <table>
         <thead>
@@ -182,7 +180,6 @@
         </tbody>
     </table>
 
-    {{-- Prescriptions --}}
     <h2>Prescriptions</h2>
     <form action="{{ route('doctor.prescription.store') }}" method="POST">
         @csrf
@@ -234,7 +231,6 @@
         </tbody>
     </table>
 
-    {{-- Manage Appointments --}}
     <h2>Manage Appointments</h2>
     <table>
         <thead>
@@ -274,7 +270,6 @@
         </tbody>
     </table>
 
-    {{-- Patient Feedback --}}
     <h2>Patient Feedback</h2>
     <table>
         <thead>

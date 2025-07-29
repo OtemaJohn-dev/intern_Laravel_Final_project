@@ -88,14 +88,13 @@
 <div class="container">
     <h1>Cancer Institute Uganda - Patient Control Page</h1>
 
-    {{-- Flash messages --}}
+    
     @if(session('success'))
         <p class="success" id="success-message">{{ session('success') }}</p>
     @elseif(session('error'))
         <p class="error" id="error-message">{{ session('error') }}</p>
     @endif
 
-    {{-- Medical History --}}
     <h2>Medical History</h2>
     @if($prescriptions->isEmpty())
         <p>No medical records found.</p>
@@ -120,7 +119,6 @@
         </table>
     @endif
 
-    {{-- Appointment Request --}}
     <h2>Request Appointment</h2>
     <form id="appointmentForm" action="{{ route('patient.request.appointment') }}" method="POST">
         @csrf
@@ -128,7 +126,6 @@
         <button type="submit">Request Appointment</button>
     </form>
 
-    {{-- Feedback --}}
     <h2>Send Feedback</h2>
     <form id="feedbackForm" action="{{ route('patient.send.feedback') }}" method="POST">
         @csrf
@@ -138,7 +135,7 @@
 </div>
 
 <script>
-    // Auto-hide flash messages after 5 seconds
+
     setTimeout(() => {
         const successMsg = document.getElementById('success-message');
         const errorMsg = document.getElementById('error-message');
@@ -146,14 +143,12 @@
         if (errorMsg) errorMsg.style.display = 'none';
     }, 5000);
 
-    // Confirmation before appointment submit
     document.getElementById('appointmentForm').addEventListener('submit', function(e) {
         if (!confirm('Do you want to request this appointment?')) {
             e.preventDefault();
         }
     });
 
-    // Confirmation before feedback submit
     document.getElementById('feedbackForm').addEventListener('submit', function(e) {
         if (!confirm('Do you want to send this feedback?')) {
             e.preventDefault();

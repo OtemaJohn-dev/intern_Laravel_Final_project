@@ -139,7 +139,6 @@
         </div>
     @endif
 
-    <!-- Doctors Management Section -->
     <section>
         <h2>Doctors Management</h2>
 
@@ -181,7 +180,6 @@
         </table>
     </section>
 
-    <!-- Drugs Stock Management Section -->
     <section>
         <h2>Drugs Stock Management</h2>
 
@@ -228,7 +226,6 @@
         </table>
     </section>
 
-    <!-- Doctor Edit Modal -->
     <div id="doctorModal" class="modal-bg">
         <div class="modal-content">
             <h3>Edit Doctor</h3>
@@ -246,7 +243,6 @@
         </div>
     </div>
 
-    <!-- Drug Edit Modal -->
     <div id="drugModal" class="modal-bg">
         <div class="modal-content">
             <h3>Edit Drug</h3>
@@ -266,7 +262,7 @@
     </div>
 
 <script>
-    // Doctor Modal Functions
+
     function openDoctorModal(id) {
         fetch(`/admin/edit-doctor/${id}`)
             .then(res => res.json())
@@ -285,7 +281,6 @@
         document.getElementById('doctorModal').style.display = 'none';
     }
 
-    // Drug Modal Functions
     function openDrugModal(id) {
         fetch(`/admin/edit-drug/${id}`)
             .then(res => res.json())

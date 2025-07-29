@@ -45,7 +45,6 @@
         });
     });
 
-    // Animate button on click
     const loginBtn = document.getElementById('loginBtn');
     loginBtn.addEventListener('click', function () {
         loginBtn.style.transform = "scale(0.95)";
@@ -78,7 +77,6 @@
         }
     }
 
-    /* Responsive */
     @media (max-width: 100px) {
         h1 {
             font-size: 2rem;
