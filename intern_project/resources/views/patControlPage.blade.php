@@ -1,11 +1,8 @@
-@extends('layout.dashboard')
-@section('content')
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Patient Control Page | Cancer Institute Uganda</title>
     <style>
         body {
@@ -89,55 +86,59 @@
 </head>
 <body>
 <div class="container">
-    <h1>Patient Control Page</h1>
+    <h1>Cancer Institute Uganda - Patient Control Page</h1>
 
+    {{-- Flash messages --}}
     @if(session('success'))
         <p class="success" id="success-message">{{ session('success') }}</p>
     @elseif(session('error'))
         <p class="error" id="error-message">{{ session('error') }}</p>
     @endif
 
+    {{-- Medical History --}}
     <h2>Medical History</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Signs & Symptoms</th>
-            <th>Medicine Prescribed</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($Prescriptions as $prescription)
-            <tr>
-                <td>{{ $prescription->created_at->format('Y-m-d') }}</td>
-                <td>{{ $prescription->signs_and_symptoms }}</td>
-                <td>{{ $prescription->medicine }}</td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+    @if($prescriptions->isEmpty())
+        <p>No medical records found.</p>
+    @else
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Signs & Symptoms</th>
+                    <th>Medicine Prescribed</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($prescriptions as $prescription)
+                    <tr>
+                        <td>{{ $prescription->created_at->format('Y-m-d') }}</td>
+                        <td>{{ $prescription->signs_and_symptoms }}</td>
+                        <td>{{ $prescription->medicine }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
+    {{-- Appointment Request --}}
     <h2>Request Appointment</h2>
     <form id="appointmentForm" action="{{ route('patient.request.appointment') }}" method="POST">
         @csrf
-        <input type="text" name="patient_name" placeholder="Your Name" required>
-        <input type="text" name="user_number" placeholder="Your User Number" required>
-        <input type="date" name="appointment_date" required>
+        <input type="date" name="appointment_date" required />
         <button type="submit">Request Appointment</button>
     </form>
 
+    {{-- Feedback --}}
     <h2>Send Feedback</h2>
     <form id="feedbackForm" action="{{ route('patient.send.feedback') }}" method="POST">
         @csrf
-        <input type="text" name="patient_name" placeholder="Your Name" required>
-        <input type="text" name="user_number" placeholder="Your User Number" required>
         <textarea name="message" placeholder="Write your feedback here..." rows="4" required></textarea>
         <button type="submit">Send Feedback</button>
     </form>
 </div>
 
 <script>
-    
+    // Auto-hide flash messages after 5 seconds
     setTimeout(() => {
         const successMsg = document.getElementById('success-message');
         const errorMsg = document.getElementById('error-message');
@@ -145,18 +146,19 @@
         if (errorMsg) errorMsg.style.display = 'none';
     }, 5000);
 
+    // Confirmation before appointment submit
     document.getElementById('appointmentForm').addEventListener('submit', function(e) {
-        const confirmSubmit = confirm('Do you want to request this appointment?');
-        if (!confirmSubmit) e.preventDefault();
+        if (!confirm('Do you want to request this appointment?')) {
+            e.preventDefault();
+        }
     });
 
+    // Confirmation before feedback submit
     document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-        const confirmSubmit = confirm('Do you want to send this feedback?');
-        if (!confirmSubmit) e.preventDefault();
+        if (!confirm('Do you want to send this feedback?')) {
+            e.preventDefault();
+        }
     });
 </script>
-
 </body>
 </html>
-
-@endsection

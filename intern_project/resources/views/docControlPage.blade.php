@@ -1,11 +1,8 @@
-@extends('layout.dashboard')
-@section('content')
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Doctor Control Page | Cancer Institute Uganda</title>
     <style>
         body {
@@ -24,17 +21,15 @@
             width: 95%;
             max-width: 1200px;
         }
-        h1 {
+        h1, h2 {
             color: #2c3e50;
-            text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         h2 {
             color: #16a085;
-            margin-top: 30px;
-            margin-bottom: 15px;
+            margin-top: 40px;
         }
-        form, table {
+        form {
             margin-bottom: 30px;
         }
         input, select, textarea {
@@ -44,6 +39,8 @@
             font-size: 1rem;
             width: 100%;
             margin-bottom: 10px;
+            box-sizing: border-box;
+            resize: vertical;
         }
         button {
             background: #3498db;
@@ -62,26 +59,39 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 40px;
         }
         table, th, td {
             border: 1px solid #ddd;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
         }
         th {
             background-color: #16a085;
             color: #fff;
         }
-        .action-btns a, .action-btns button {
-            margin-right: 5px;
+        .action-btns form {
+            display: inline-block;
+            margin: 0 5px 0 0;
         }
         .success {
             color: green;
+            margin-bottom: 20px;
         }
         .error {
             color: red;
+            margin-bottom: 10px;
+        }
+        textarea {
+            min-height: 80px;
+        }
+        .error-text {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: -8px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -94,13 +104,23 @@
     @elseif(session('error'))
         <p class="error">{{ session('error') }}</p>
     @endif
+
+    {{-- Manage Patients --}}
     <h2>Manage Patients</h2>
     <form action="{{ route('doctor.patient.store') }}" method="POST">
         @csrf
-        <input type="text" name="name" placeholder="Patient Name" required>
-        <input type="number" name="age" placeholder="Age" required>
-        <input type="text" name="user_number" placeholder="User Number" required>
+        <input type="text" name="name" placeholder="Patient Name" required value="{{ old('name') }}">
+        @error('name')<div class="error-text">{{ $message }}</div>@enderror
+
+        <input type="number" name="age" placeholder="Age" required value="{{ old('age') }}">
+        @error('age')<div class="error-text">{{ $message }}</div>@enderror
+
+        <input type="text" name="user_number" placeholder="User Number" required value="{{ old('user_number') }}">
+        @error('user_number')<div class="error-text">{{ $message }}</div>@enderror
+
         <input type="password" name="user_password" placeholder="Password" required>
+        @error('user_password')<div class="error-text">{{ $message }}</div>@enderror
+
         <button type="submit">Add Patient</button>
     </form>
 
@@ -114,55 +134,77 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($patients as $patient)
+        @forelse($patients as $patient)
             <tr>
                 <td>{{ $patient->name }}</td>
                 <td>{{ $patient->age }}</td>
                 <td>{{ $patient->user_number }}</td>
                 <td class="action-btns">
                     <a href="#" onclick="editPatient({{ $patient->id }}, '{{ $patient->name }}', {{ $patient->age }}, '{{ $patient->user_number }}')">Edit</a>
-                    <a href="{{ route('doctor.patient.delete', $patient->id) }}">Delete</a>
+
+                    <form action="{{ route('doctor.patient.delete', $patient->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this patient?');" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background:#e74c3c;">Delete</button>
+                    </form>
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr><td colspan="4">No patients found.</td></tr>
+        @endforelse
         </tbody>
     </table>
 
+    {{-- Available Drugs --}}
     <h2>Available Drugs</h2>
     <table>
         <thead>
-        <tr>
-            <th>Drug Name</th>
-            <th>Quantity</th>
-            <th>Manufacture Date</th>
-            <th>Expiry Date</th>
-            <th>Price</th>
-        </tr>
+            <tr>
+                <th>Drug Name</th>
+                <th>Quantity</th>
+                <th>Manufacture Date</th>
+                <th>Expiry Date</th>
+                <th>Price</th>
+            </tr>
         </thead>
         <tbody>
-        @foreach($drugs as $drug)
-            <tr>
-                <td>{{ $drug->Drug_name }}</td>
-                <td>{{ $drug->Quantity }}</td>
-                <td>{{ $drug->Manufacture_date }}</td>
-                <td>{{ $drug->Expiry_date }}</td>
-                <td>{{ $drug->Price }}</td>
-            </tr>
-        @endforeach
+            @forelse($drugs as $drug)
+                <tr>
+                    <td>{{ $drug->drug_name }}</td>
+                    <td>{{ $drug->quantity }}</td>
+                    <td>{{ $drug->manufacture_date }}</td>
+                    <td>{{ $drug->expiry_date }}</td>
+                    <td>{{ number_format($drug->price, 2) }}</td>
+                </tr>
+            @empty
+                <tr><td colspan="5">No drugs available.</td></tr>
+            @endforelse
         </tbody>
     </table>
+
+    {{-- Prescriptions --}}
     <h2>Prescriptions</h2>
     <form action="{{ route('doctor.prescription.store') }}" method="POST">
         @csrf
-        <input type="text" name="user_number" placeholder="Patient User Number" required>
-        <textarea name="signs_and_symptoms" placeholder="Signs and Symptoms" required></textarea>
-        <textarea name="medicine" placeholder="Medicine" required></textarea>
+        <input type="text" name="pat_name" placeholder="Enter patient's name" required value="{{ old('pat_name') }}">
+        @error('pat_name')<div class="error-text">{{ $message }}</div>@enderror
+
+        <input type="text" name="user_number" placeholder="Patient User Number" required value="{{ old('user_number') }}">
+        @error('user_number')<div class="error-text">{{ $message }}</div>@enderror
+
+        <textarea name="signs_and_symptoms" placeholder="Signs and Symptoms" required>{{ old('signs_and_symptoms') }}</textarea>
+        @error('signs_and_symptoms')<div class="error-text">{{ $message }}</div>@enderror
+
+        <textarea name="medicine" placeholder="Medicine" required>{{ old('medicine') }}</textarea>
+        @error('medicine')<div class="error-text">{{ $message }}</div>@enderror
+
         <button type="submit">Add Prescription</button>
     </form>
 
     <table>
         <thead>
         <tr>
+            <th>Patient Name</th>
             <th>User Number</th>
             <th>Signs & Symptoms</th>
             <th>Medicine</th>
@@ -170,20 +212,29 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($prescriptions as $prescription)
+        @forelse($prescriptions as $prescription)
             <tr>
+                <td>{{ $prescription->pat_name }}</td>
                 <td>{{ $prescription->user_number }}</td>
                 <td>{{ $prescription->signs_and_symptoms }}</td>
                 <td>{{ $prescription->medicine }}</td>
                 <td class="action-btns">
-                    <a href="#" onclick="editPrescription({{ $prescription->id }}, '{{ $prescription->user_number }}', '{{ $prescription->signs_and_symptoms }}', '{{ $prescription->medicine }}')">Edit</a>
-                    <a href="{{ route('doctor.prescription.delete', $prescription->id) }}">Delete</a>
+                    <a href="#" onclick="editPrescription({{ $prescription->id }}, '{{ $prescription->pat_name }}', '{{ $prescription->user_number }}', '{{ $prescription->signs_and_symptoms }}', '{{ $prescription->medicine }}')">Edit</a>
+
+                    <form action="{{ route('doctor.prescription.delete', $prescription->id) }}" method="POST" onsubmit="return confirm('Delete this prescription?');" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="background:#e74c3c;">Delete</button>
+                    </form>
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr><td colspan="5">No prescriptions found.</td></tr>
+        @endforelse
         </tbody>
     </table>
 
+    {{-- Manage Appointments --}}
     <h2>Manage Appointments</h2>
     <table>
         <thead>
@@ -196,20 +247,34 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($appointments as $appointment)
+        @forelse($appointments as $appointment)
             <tr>
-                <td>{{ $appointment->patient_name }}</td>
-                <td>{{ $appointment->user_number }}</td>
-                <td>{{ $appointment->appointment_date }}</td>
+                <td>{{ $appointment->pat_name }}</td>
+                <td>{{ $appointment->user_number ?? '-' }}</td>
+                <td>{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('Y-m-d') }}</td>
                 <td>{{ ucfirst($appointment->status) }}</td>
                 <td class="action-btns">
-                    <a href="{{ route('doctor.appointment.approve', $appointment->id) }}">Approve</a>
-                    <a href="{{ route('doctor.appointment.postpone', $appointment->id) }}">Postpone</a>
+                    @if($appointment->status === 'pending')
+                        <form action="{{ route('doctor.appointment.approve', $appointment->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit">Approve</button>
+                        </form>
+                        <form action="{{ route('doctor.appointment.postpone', $appointment->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit">Postpone</button>
+                        </form>
+                    @else
+                        <em>No actions</em>
+                    @endif
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr><td colspan="5">No appointments found.</td></tr>
+        @endforelse
         </tbody>
     </table>
+
+    {{-- Patient Feedback --}}
     <h2>Patient Feedback</h2>
     <table>
         <thead>
@@ -222,35 +287,36 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($feedbacks as $feedback)
+        @forelse($feedbacks as $feedback)
             <tr>
-                <td>{{ $feedback->patient_name }}</td>
-                <td>{{ $feedback->user_number }}</td>
+                <td>{{ $feedback->pat_name }}</td>
+                <td>{{ $feedback->user_number ?? '-' }}</td>
                 <td>{{ $feedback->message }}</td>
                 <td>{{ $feedback->doctor_advice ?? 'Pending' }}</td>
                 <td>
                     <form action="{{ route('doctor.feedback.advice', $feedback->id) }}" method="POST">
                         @csrf
-                        <textarea name="doctor_advice" placeholder="Enter advice here..." required></textarea>
+                        <textarea name="doctor_advice" placeholder="Enter advice here..." required>{{ old('doctor_advice') }}</textarea>
+                        @error('doctor_advice')<div class="error-text">{{ $message }}</div>@enderror
                         <button type="submit">Send Advice</button>
                     </form>
                 </td>
             </tr>
-        @endforeach
+        @empty
+            <tr><td colspan="5">No feedback found.</td></tr>
+        @endforelse
         </tbody>
     </table>
 </div>
 
 <script>
-    function editPatient(id, name, age, user_number) {
-        alert('Edit Patient: ' + name);
-    }
 
-    function editPrescription(id, user_number, symptoms, medicine) {
-        alert('Edit Prescription for: ' + user_number);
+    function editPatient(id, name, age, user_number) {
+        alert('Edit patient: ' + name + ' (Functionality to be implemented)');
+    }
+    function editPrescription(id, pat_name, user_number, symptoms, medicine) {
+        alert('Edit prescription for: ' + pat_name + ' (Functionality to be implemented)');
     }
 </script>
 </body>
 </html>
-
-@endsection

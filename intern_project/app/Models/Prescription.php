@@ -10,6 +10,6 @@ class Prescription extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_number', 'signs_and_symptoms', 'medicine'
+        'pat_name', 'user_number', 'signs_and_symptoms', 'medicine'
     ];
 }

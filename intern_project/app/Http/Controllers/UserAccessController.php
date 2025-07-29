@@ -6,16 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class UserAccessController extends Controller
 {
-    // Display User Access Page
+    // Show login page
     public function index()
     {
         return view('useraccess');
     }
 
-    // Handle Login
+    // Handle login submission
     public function login(Request $request)
     {
         $request->validate([
@@ -28,22 +29,39 @@ class UserAccessController extends Controller
             $doctor = Doctor::where('user_number', $request->user_number)->first();
 
             if ($doctor && Hash::check($request->password, $doctor->user_password)) {
-                return redirect()->route('doctor.control.page');
-            } else {
-                return back()->with('error', 'Invalid credentials for Doctor.');
-            }
+                // Save doctor info in session
+                Session::put('user_id', $doctor->id);
+                Session::put('user_role', 'doctor');
+
+                return redirect()->route('doctor.control.page')
+                                 ->with('success', 'Welcome Doctor!');
+            } 
+
+            return back()->with('error', 'Invalid credentials for Doctor.');
         }
 
         if ($request->role === 'patient') {
             $patient = Patient::where('user_number', $request->user_number)->first();
 
             if ($patient && Hash::check($request->password, $patient->user_password)) {
-                return redirect()->route('patient.control.page');
-            } else {
-                return back()->with('error', 'Invalid credentials for Patient.');
-            }
+                // Save patient info in session
+                Session::put('user_id', $patient->id);
+                Session::put('user_role', 'patient');
+
+                return redirect()->route('patient.control.page')
+                                 ->with('success', 'Welcome Patient!');
+            } 
+
+            return back()->with('error', 'Invalid credentials for Patient.');
         }
 
         return back()->with('error', 'Invalid role selected.');
+    }
+
+    // Handle logout
+    public function logout()
+    {
+        Session::flush();
+        return redirect()->route('useraccess')->with('success', 'You have logged out successfully.');
     }
 }

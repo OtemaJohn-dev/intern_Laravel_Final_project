@@ -14,7 +14,6 @@ return new class extends Migration
     Schema::create('appointments', function (Blueprint $table) {
         $table->id();
         $table->string('patient_name');
-        $table->string('user_number');
         $table->date('appointment_date');
         $table->enum('status', ['pending', 'approved', 'postponed'])->default('pending');
         $table->timestamps();

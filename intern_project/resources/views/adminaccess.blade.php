@@ -1,6 +1,4 @@
-@extends('layout.dashboard')
 
-@section('content')
 <div style="display: flex; justify-content: center; align-items: center; height: 90vh; background: linear-gradient(135deg, #1abc9c, #3498db);">
     <div style="background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0px 10px 25px rgba(0,0,0,0.2); width: 100%; max-width: 500px; animation: fadeIn 1s ease-in-out;">
         <h1 style="text-align: center; color: #2c3e50; font-size: 2.5rem;">Cancer Institute Uganda</h1>
@@ -93,4 +91,4 @@
         }
     }
 </style>
-@endsection
+

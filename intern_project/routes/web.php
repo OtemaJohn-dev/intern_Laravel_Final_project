@@ -52,9 +52,9 @@ Route::get('/admin-access', [adminPage1Controller::class, 'showLoginPage'])->nam
 Route::post('/admin-verify', [adminPage1Controller::class, 'verifyAdmin'])->name('admin.verify');
 
 
-Route::get('/adminControlPage', function () {
-    return view('adminControlPage');
-})->name('adminControlPage');
+// Route::get('/admin-control-page', function () {
+//     return view('adminControlPage');
+// })->name('adminControlPage');
 
 
 
@@ -62,19 +62,17 @@ Route::get('/adminControlPage', function () {
 
 Route::get('/admin-control-page', [AdminControlController::class, 'index'])->name('adminControlPage');
 
-
+// Doctors Management
 Route::post('/admin/add-doctor', [AdminControlController::class, 'storeDoctor'])->name('admin.add.doctor');
 Route::get('/admin/edit-doctor/{id}', [AdminControlController::class, 'editDoctor'])->name('admin.edit.doctor');
 Route::put('/admin/update-doctor/{id}', [AdminControlController::class, 'updateDoctor'])->name('admin.update.doctor');
 Route::delete('/admin/delete-doctor/{id}', [AdminControlController::class, 'deleteDoctor'])->name('admin.delete.doctor');
 
-
+// Drugs Management
 Route::post('/admin/add-drug', [AdminControlController::class, 'storeDrug'])->name('admin.add.drug');
 Route::get('/admin/edit-drug/{id}', [AdminControlController::class, 'editDrug'])->name('admin.edit.drug');
 Route::put('/admin/update-drug/{id}', [AdminControlController::class, 'updateDrug'])->name('admin.update.drug');
 Route::delete('/admin/delete-drug/{id}', [AdminControlController::class, 'deleteDrug'])->name('admin.delete.drug');
-
-
 
 Route::get('/user-access', [UserAccessController::class, 'index'])->name('user.access');
 Route::post('/user-access-login', [UserAccessController::class, 'login'])->name('user.access.login');
@@ -88,7 +86,7 @@ Route::get('/patient-control-page', function () {
 })->name('patient.control.page');
 
 
-Route::get('/doctor-control-page', [DoctorControlController::class, 'index'])->name('doctor.control.page');
+Route::get('/doctor-control-page', [DoctorControlController::class, 'displayindex'])->name('doctor.control.page');
 
 
 Route::post('/doctor/patient/store', [DoctorControlController::class, 'storePatient'])->name('doctor.patient.store');
@@ -102,13 +100,18 @@ Route::get('/doctor/prescription/delete/{id}', [DoctorControlController::class, 
 
 
 Route::get('/doctor/appointment/approve/{id}', [DoctorControlController::class, 'approveAppointment'])->name('doctor.appointment.approve');
-Route::get('/doctor/appointment/postpone/{id}', [DoctorControlController::class, 'postponeAppointment'])->name('doctor.appointment.postpone');
+Route::post('/doctor/appointment/postpone/{id}', [DoctorControlController::class, 'postponeAppointment'])->name('doctor.appointment.postpone');
 
 
 Route::post('/doctor/feedback/advice/{id}', [DoctorControlController::class, 'sendAdvice'])->name('doctor.feedback.advice');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/patient-control-page', [PatientControlController::class, 'index'])->name('patient.control.page');
-    Route::post('/patient/request-appointment', [PatientControlController::class, 'requestAppointment'])->name('patient.request.appointment');
-    Route::post('/patient/send-feedback', [PatientControlController::class, 'sendFeedback'])->name('patient.send.feedback');
+    Route::get('/patient-control-page', [PatientControlController::class, 'displayindex'])->name('patient.control.page');
+    Route::post('/patient/request-appointment', [PatientControlController::class, 'requestAppointment'])
+    ->middleware('auth')
+    ->name('patient.request.appointment');
+    Route::post('/patient/send-feedback', [PatientControlController::class, 'sendFeedback'])
+        ->middleware('auth')
+        ->name('patient.send.feedback');
+    // Route::post('/patient/send-feedback', [PatientControlController::class, 'sendFeedback'])->name('patient.send.feedback');
 });

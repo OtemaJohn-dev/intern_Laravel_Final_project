@@ -13,7 +13,8 @@ return new class extends Migration
 {
     Schema::create('prescriptions', function (Blueprint $table) {
         $table->id();
-        $table->string('user_number'); // Links to patient
+        $table->string('pat_name'); 
+        $table->string('user_number'); 
         $table->text('signs_and_symptoms');
         $table->text('medicine');
         $table->timestamps();

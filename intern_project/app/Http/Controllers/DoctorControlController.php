@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 class DoctorControlController extends Controller
 {
     
-    public function index()
+    public function displayindex()
     {
         $patients = Patient::all();
         $prescriptions = Prescription::all();
@@ -70,37 +70,44 @@ class DoctorControlController extends Controller
         return redirect()->back()->with('success', 'Patient deleted successfully!');
     }
 
-    public function storePrescription(Request $request)
+ public function storePrescription(Request $request)
     {
         $request->validate([
-            'user_number' => 'required|string',
+            'pat_name' => 'required|string|max:255',
+            'user_number' => 'required|string|max:255',
             'signs_and_symptoms' => 'required|string',
             'medicine' => 'required|string',
         ]);
 
-        Prescription::create($request->all());
+        Prescription::create([
+            'pat_name' => $request->pat_name,
+            'user_number' => $request->user_number,
+            'signs_and_symptoms' => $request->signs_and_symptoms,
+            'medicine' => $request->medicine,
+        ]);
+
         return redirect()->back()->with('success', 'Prescription added successfully!');
     }
 
     public function updatePrescription(Request $request, $id)
     {
         $request->validate([
-            'user_number' => 'required|string',
+            'pat_name' => 'required|string|max:255',
+            'user_number' => 'required|string|max:255',
             'signs_and_symptoms' => 'required|string',
             'medicine' => 'required|string',
         ]);
 
         $prescription = Prescription::findOrFail($id);
-        $prescription->update($request->all());
+        $prescription->update([
+            'pat_name' => $request->pat_name,
+            'user_number' => $request->user_number,
+            'signs_and_symptoms' => $request->signs_and_symptoms,
+            'medicine' => $request->medicine,
+        ]);
+
         return redirect()->back()->with('success', 'Prescription updated successfully!');
     }
-
-    public function deletePrescription($id)
-    {
-        Prescription::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Prescription deleted successfully!');
-    }
-
 
     public function approveAppointment($id)
     {

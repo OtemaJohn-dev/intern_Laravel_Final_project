@@ -11,52 +11,59 @@ use App\Models\Feedback;
 class PatientControlController extends Controller
 {
     /**
-     * Display the Patient Control Page
+     * Display the Patient Control Page with prescriptions.
      */
-    public function index()
+    public function displayindex()
     {
-        // Get logged-in user's user_number
-        $user_number = Auth::user()->user_number;
+        $user = Auth::user();
 
-        // Fetch the patient's prescriptions
-        $prescriptions = Prescription::where('user_number', $user_number)->get();
+        // Fetch prescriptions by patient name
+        $prescriptions = Prescription::where('pat_name', $user->name)->get();
 
         return view('patControlPage', compact('prescriptions'));
     }
 
     /**
-     * Request an Appointment
+     * Handle appointment request submission.
      */
     public function requestAppointment(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to request an appointment.');
+        }
+
+        $user = Auth::user();
+
         $request->validate([
-            'appointment_date' => 'required|date',
+            'appointment_date' => 'required|date|after_or_equal:today',
         ]);
 
-        // Save appointment request
         Appointment::create([
-            'patient_name'   => Auth::user()->name,
-            'user_number'    => Auth::user()->user_number,
+            'patient_name'     => $user->name,
             'appointment_date' => $request->appointment_date,
-            'status'         => 'pending',
+            'status'           => 'pending',
         ]);
 
         return redirect()->back()->with('success', 'Appointment requested successfully!');
     }
 
     /**
-     * Send Feedback
+     * Handle patient feedback submission.
      */
     public function sendFeedback(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to send feedback.');
+        }
+
+        $user = Auth::user();
+
         $request->validate([
             'message' => 'required|string|max:1000',
         ]);
 
-        // Save patient feedback
         Feedback::create([
-            'patient_name' => Auth::user()->name,
-            'user_number'  => Auth::user()->user_number,
+            'patient_name' => $user->name,
             'message'      => $request->message,
         ]);
 

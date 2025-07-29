@@ -14,56 +14,58 @@ class AdminControlController extends Controller
     {
         $doctors = Doctor::all();
         $drugs = Drug::all();
-        return view('adminControlPage', compact('doctors', 'drugs'));
+        return view ('adminControlPage', compact('doctors', 'drugs'));
     }
 
-    public function storeDoctor(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'user_role' => 'required|string',
-            'user_number' => 'required|string|unique:doctors',
-            'user_password' => 'required|string|min:6',
-        ]);
+ public function storeDoctor(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'user_role' => 'required|string',
+        'user_number' => 'required|string|unique:doctors',
+        'user_password' => 'required|string|min:6',
+    ]);
 
-        Doctor::create([
-            'name' => $request->name,
-            'user_role' => $request->user_role,
-            'user_number' => $request->user_number,
-            'user_password' => Hash::make($request->user_password),
-        ]);
+    Doctor::create([
+        'name' => $request->name,
+        'user_role' => $request->user_role,
+        'user_number' => $request->user_number,
+        'user_password' => Hash::make($request->user_password),
+    ]);
 
-        return redirect()->back()->with('success', 'Doctor added successfully!');
+    return redirect()->back()->with('success', 'Doctor added successfully!');
+}
+
+public function editDoctor($id)
+{
+    $doctor = Doctor::findOrFail($id);
+    return response()->json($doctor);
+}
+
+public function updateDoctor(Request $request, $id)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'user_role' => 'required|string',
+        'user_number' => 'required|string|unique:doctors,user_number,' . $id,
+        'user_password' => 'nullable|string|min:6',
+    ]);
+
+    $doctor = Doctor::findOrFail($id);
+    $doctor->name = $request->name;
+    $doctor->user_role = $request->user_role;
+    $doctor->user_number = $request->user_number;
+
+    if ($request->filled('user_password')) {
+        $doctor->user_password = Hash::make($request->user_password);
     }
 
-    public function editDoctor($id)
-    {
-        $doctor = Doctor::findOrFail($id);
-        return response()->json($doctor);
-    }
+    $doctor->save();
 
-    public function updateDoctor(Request $request, $id)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'user_role' => 'required|string',
-            'user_number' => 'required|string',
-            'user_password' => 'nullable|string|min:6',
-        ]);
+    return redirect()->back()->with('success', 'Doctor updated successfully!');
+}
 
-        $doctor = Doctor::findOrFail($id);
-        $doctor->name = $request->name;
-        $doctor->user_role = $request->user_role;
-        $doctor->user_number = $request->user_number;
 
-        if ($request->filled('user_password')) {
-            $doctor->user_password = Hash::make($request->user_password);
-        }
-
-        $doctor->save();
-
-        return redirect()->back()->with('success', 'Doctor updated successfully!');
-    }
 
     public function deleteDoctor($id)
     {
